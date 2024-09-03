@@ -47,7 +47,7 @@ contract TwoFactorAuth is Permissioned {
             secondarySigner: _secondarySigner,
             isApproved: false,
             lastApprovalTime: 0,
-            encryptedPassword: euint256(0),
+            encryptedPassword: FHE.asEuint256(0),
             userPublicKey: _userPublicKey,
             passwordUsed: false,
             validUntil: 0
@@ -91,6 +91,8 @@ contract TwoFactorAuth is Permissioned {
         data.passwordUsed = false;
 
         // Generate and encrypt a temporary password
+        // Note: This is not a perfect way to generate a password as it's not completely random.
+        // In a production environment, a more secure random number generation method should be used.
         uint256 tempPassword = uint256(
             keccak256(abi.encodePacked(_user, data.lastApprovalTime))
         );
@@ -104,12 +106,12 @@ contract TwoFactorAuth is Permissioned {
      * @dev Retrieves the encrypted password for a user.
      * @param _user The address of the user.
      * @param permission The permission object for access control.
-     * @return The sealed encrypted password.
+     * @return encryptedPassword The sealed encrypted password.
      */
     function getEncryptedPassword(
         address _user,
         Permission memory permission
-    ) external view onlySender(permission) returns (bytes memory) {
+    ) external view onlySender(permission) returns (string memory encryptedPassword) {
         AuthData storage data = authData[_user];
         require(data.isApproved, "Login not approved");
         require(!data.passwordUsed, "Password has already been used");
@@ -118,15 +120,15 @@ contract TwoFactorAuth is Permissioned {
     }
 
     /**
-     * @dev Verifies the temporary password provided by the user.
+     * @dev Verifies the temporary password for a user by a whitelisted service.
      * @param _user The address of the user.
-     * @param tempPassword The plaintext temporary password to verify.
+     * @param encryptedTempPassword The encrypted temporary password provided by the service.
      * @param permission The permission object for access control.
      * @return True if the password is valid, false otherwise.
      */
     function verifyTempPassword(
         address _user,
-        uint256 tempPassword,
+        inEuint256 calldata encryptedTempPassword,
         Permission memory permission
     ) external onlySender(permission) returns (bool) {
         AuthData storage data = authData[_user];
@@ -134,9 +136,14 @@ contract TwoFactorAuth is Permissioned {
         require(!data.passwordUsed, "Password has already been used");
         require(block.timestamp <= data.validUntil, "Password has expired"); // Check if the password is still valid
 
+        // Decrypt the stored password
         uint256 storedPassword = FHE.decrypt(data.encryptedPassword);
+        
+        // Decrypt the provided temporary password
+        uint256 providedPassword = FHE.decrypt(FHE.asEuint256(encryptedTempPassword));
 
-        bool isValid = (tempPassword == storedPassword);
+        // Compare the decrypted passwords
+        bool isValid = (providedPassword == storedPassword);
 
         if (isValid) {
             data.passwordUsed = true;
