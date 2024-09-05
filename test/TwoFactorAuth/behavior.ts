@@ -25,7 +25,9 @@ export function shouldBehaveLikeTwoFactorAuth(): void {
     await tx.wait();
 
     // Verify the registration
-    const authData = await this.twoFactorAuth.authData(this.signers.admin.address);
+    const authData = await this.twoFactorAuth.authData(
+      this.signers.admin.address,
+    );
     expect(authData.secondarySigner).to.equal(this.signers.secondary.address);
     expect(authData.userPublicKey).to.equal(adminPermit.publicKey);
   });
@@ -38,19 +40,27 @@ export function shouldBehaveLikeTwoFactorAuth(): void {
     await tx.wait();
 
     // Verify the login request status
-    const authData = await this.twoFactorAuth.authData(this.signers.admin.address);
+    const authData = await this.twoFactorAuth.authData(
+      this.signers.admin.address,
+    );
     expect(authData.isApproved).to.be.false;
   });
 
   // Test case: Approve a login request
   it("should approve a login request", async function () {
+    const tempPassword = await hre.fhenixjs.encrypt_uint256(
+      BigInt(Math.floor(Math.random() * 2 ** 256)),
+    );
+
     const tx = await this.twoFactorAuth
       .connect(this.signers.secondary)
-      .approveLogin(this.signers.admin.address);
+      .approveLogin(this.signers.admin.address, tempPassword);
     await tx.wait();
 
     // Verify the approval status
-    const authData = await this.twoFactorAuth.authData(this.signers.admin.address);
+    const authData = await this.twoFactorAuth.authData(
+      this.signers.admin.address,
+    );
     expect(authData.isApproved).to.be.true;
   });
 
@@ -78,7 +88,9 @@ export function shouldBehaveLikeTwoFactorAuth(): void {
     await tx.wait();
 
     // Verify that the service has been whitelisted
-    const whitelistedServices = await this.twoFactorAuth.whitelistedServices(serviceSigner.address);
+    const whitelistedServices = await this.twoFactorAuth.whitelistedServices(
+      serviceSigner.address,
+    );
     expect(whitelistedServices).to.be.true;
   });
 
@@ -91,10 +103,12 @@ export function shouldBehaveLikeTwoFactorAuth(): void {
     );
 
     // Encrypt the temporary password for verification
-    const encryptedTempPassword = await hre.fhenixjs.encrypt_uint256(tempPassword);
+    const encryptedTempPassword = await hre.fhenixjs.encrypt_uint256(
+      tempPassword,
+    );
 
     // Verify the temporary password using the whitelisted service
-    const tx = await this.twoFactorAuth
+    const isValid = await this.twoFactorAuth
       .connect(serviceSigner)
       .verifyTempPassword(
         servicePermit,
@@ -102,10 +116,6 @@ export function shouldBehaveLikeTwoFactorAuth(): void {
         this.signers.admin.address,
         encryptedTempPassword,
       );
-    await tx.wait();
-
-    // Verify that the password has been marked as used
-    const authData = await this.twoFactorAuth.authData(this.signers.admin.address);
-    expect(authData.passwordUsed).to.be.true;
+    expect(isValid).to.be.true;
   });
 }

@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
+import {Console} from "@fhenixprotocol/contracts/utils/debug/Console.sol";
 import "@fhenixprotocol/contracts/FHE.sol";
 import {Permissioned, Permission} from "@fhenixprotocol/contracts/access/Permissioned.sol";
 
@@ -22,7 +23,6 @@ contract TwoFactorAuth is Permissioned {
     uint256 lastApprovalTime; // Timestamp of the last approval
     euint256 encryptedPassword; // Encrypted temporary password
     bytes32 userPublicKey; // Public key of the user for encryption
-    bool passwordUsed; // Indicates if the temporary password has been used
     uint256 validUntil; // Timestamp until which the password is valid
   }
 
@@ -65,7 +65,6 @@ contract TwoFactorAuth is Permissioned {
       lastApprovalTime: 0,
       encryptedPassword: FHE.asEuint256(0),
       userPublicKey: perm.publicKey,
-      passwordUsed: false,
       validUntil: 0
     });
 
@@ -86,7 +85,6 @@ contract TwoFactorAuth is Permissioned {
     // Update request time and reset approval status
     data.lastRequestTime = block.timestamp;
     data.isApproved = false;
-    data.passwordUsed = false;
 
     emit LoginRequested(msg.sender);
   }
@@ -95,7 +93,10 @@ contract TwoFactorAuth is Permissioned {
    * @dev Approves a login request from the secondary signer.
    * @param _user The address of the user requesting login.
    */
-  function approveLogin(address _user) external {
+  function approveLogin(
+    address _user,
+    inEuint256 calldata _tempPassword
+  ) external {
     AuthData storage data = authData[_user];
     require(msg.sender == data.secondarySigner, "Not authorized");
     require(
@@ -106,13 +107,8 @@ contract TwoFactorAuth is Permissioned {
     // Update approval status and generate a temporary password
     data.isApproved = true;
     data.lastApprovalTime = block.timestamp;
-    data.passwordUsed = false;
 
-    // Generate and encrypt a temporary password
-    uint256 tempPassword = uint256(
-      keccak256(abi.encodePacked(_user, data.lastApprovalTime))
-    );
-    data.encryptedPassword = FHE.asEuint256(tempPassword);
+    data.encryptedPassword = FHE.asEuint256(_tempPassword);
     data.validUntil = block.timestamp + PASSWORD_VALIDITY_DURATION; // Set validity duration
 
     emit LoginApproved(_user, msg.sender);
@@ -132,7 +128,6 @@ contract TwoFactorAuth is Permissioned {
     // Check if the user is registered and approved
     require(data.secondarySigner != address(0), "User not registered");
     require(data.isApproved, "Login not approved");
-    require(!data.passwordUsed, "Password has already been used");
 
     return data.encryptedPassword.seal(data.userPublicKey);
   }
@@ -142,37 +137,28 @@ contract TwoFactorAuth is Permissioned {
    * @param perm The permission object for access control.
    * @param _service The address of the service verifying the password.
    * @param _user The address of the user.
-   * @param encryptedTempPassword The encrypted temporary password provided by the service.
+   * @param _encryptedTempPassword The encrypted temporary password provided by the service.
    * @return True if the password is valid, false otherwise.
    */
   function verifyTempPassword(
-    Permission memory perm,
+    Permission calldata perm,
     address _service,
     address _user,
-    inEuint256 calldata encryptedTempPassword
-  ) external onlyPermitted(perm, _service) returns (bool) {
+    inEuint256 calldata _encryptedTempPassword
+  ) external view onlyPermitted(perm, _service) returns (bool) {
     require(whitelistedServices[_service], "Service not whitelisted"); // Check if the service is whitelisted
 
     AuthData storage data = authData[_user];
     require(data.isApproved, "Login not approved");
-    require(!data.passwordUsed, "Password has already been used");
     require(block.timestamp <= data.validUntil, "Password has expired"); // Check if the password is still valid
 
-    // Decrypt the stored password
-    uint256 storedPassword = FHE.decrypt(data.encryptedPassword);
-
-    // Decrypt the provided temporary password
-    uint256 providedPassword = FHE.decrypt(
-      FHE.asEuint256(encryptedTempPassword)
-    );
-
     // Compare the decrypted passwords
-    bool isValid = (providedPassword == storedPassword);
-
-    if (isValid) {
-      data.passwordUsed = true;
-      emit PasswordVerified(_user);
-    }
+    euint256 encryptedTempPassword = FHE.asEuint256(_encryptedTempPassword);
+    ebool encryptedIsValid = FHE.eq(
+      encryptedTempPassword,
+      data.encryptedPassword
+    );
+    bool isValid = FHE.decrypt(encryptedIsValid);
 
     return isValid;
   }
