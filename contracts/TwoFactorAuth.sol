@@ -24,6 +24,8 @@ contract TwoFactorAuth is Permissioned {
     euint256 encryptedPassword; // Encrypted temporary password
     bytes32 userPublicKey; // Public key of the user for encryption
     uint256 validUntil; // Timestamp until which the password is valid
+    uint8 passwordAttempts; // Number of attempts to enter the password
+    bool passwordUsed; // Indicates if the password has been used
   }
 
   // State variables
@@ -35,7 +37,6 @@ contract TwoFactorAuth is Permissioned {
   event Registered(address indexed user, address indexed secondarySigner); // Emitted when a user registers
   event LoginRequested(address indexed user); // Emitted when a login request is made
   event LoginApproved(address indexed user, address indexed secondarySigner); // Emitted when a login is approved
-  event PasswordVerified(address indexed user); // Emitted when a password is verified
 
   // Constructor to set the owner
   constructor(address _owner) Permissioned() {
@@ -65,7 +66,9 @@ contract TwoFactorAuth is Permissioned {
       lastApprovalTime: 0,
       encryptedPassword: FHE.asEuint256(0),
       userPublicKey: perm.publicKey,
-      validUntil: 0
+      validUntil: 0,
+      passwordAttempts: 0,
+      passwordUsed: false
     });
 
     emit Registered(msg.sender, _secondarySigner);
@@ -85,6 +88,8 @@ contract TwoFactorAuth is Permissioned {
     // Update request time and reset approval status
     data.lastRequestTime = block.timestamp;
     data.isApproved = false;
+    data.passwordAttempts = 0;
+    data.passwordUsed = false;
 
     emit LoginRequested(msg.sender);
   }
@@ -145,12 +150,14 @@ contract TwoFactorAuth is Permissioned {
     address _service,
     address _user,
     inEuint256 calldata _encryptedTempPassword
-  ) external view onlyPermitted(perm, _service) returns (bool) {
+  ) external onlyPermitted(perm, _service) returns (bool) {
     require(whitelistedServices[_service], "Service not whitelisted"); // Check if the service is whitelisted
 
     AuthData storage data = authData[_user];
     require(data.isApproved, "Login not approved");
     require(block.timestamp <= data.validUntil, "Password has expired"); // Check if the password is still valid
+    require(!data.passwordUsed, "Password has been used"); // Check if the password has been used too many times
+    require(data.passwordAttempts < 3, "Too many attempts"); // Check if the password has been used too many times
 
     // Compare the decrypted passwords
     euint256 encryptedTempPassword = FHE.asEuint256(_encryptedTempPassword);
@@ -159,6 +166,13 @@ contract TwoFactorAuth is Permissioned {
       data.encryptedPassword
     );
     bool isValid = FHE.decrypt(encryptedIsValid);
+
+    if (!isValid) {
+      data.passwordUsed = true;
+      data.passwordAttempts = 0;
+    } else {
+      data.passwordAttempts++;
+    }
 
     return isValid;
   }

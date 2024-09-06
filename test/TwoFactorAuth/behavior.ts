@@ -1,6 +1,5 @@
 import { expect } from "chai";
 import hre from "hardhat";
-import { generatePermit } from "fhenixjs";
 
 export function shouldBehaveLikeTwoFactorAuth(): void {
   let adminPermit: any;
@@ -108,7 +107,7 @@ export function shouldBehaveLikeTwoFactorAuth(): void {
     );
 
     // Verify the temporary password using the whitelisted service
-    const isValid = await this.twoFactorAuth
+    const tx = await this.twoFactorAuth
       .connect(serviceSigner)
       .verifyTempPassword(
         servicePermit,
@@ -116,6 +115,8 @@ export function shouldBehaveLikeTwoFactorAuth(): void {
         this.signers.admin.address,
         encryptedTempPassword,
       );
-    expect(isValid).to.be.true;
+    const receipt = await tx.wait();
+
+    expect(receipt.status).to.be.true;
   });
 }
