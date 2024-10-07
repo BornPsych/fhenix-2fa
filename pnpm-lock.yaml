@@ -7,6 +7,10 @@ settings:
 importers:
 
   .:
+    dependencies:
+      '@nomiclabs/hardhat-ethers':
+        specifier: ^2.2.3
+        version: 2.2.3(ethers@6.11.1)(hardhat@2.22.10(ts-node@10.9.2(@types/node@20.11.19)(typescript@5.3.3))(typescript@5.3.3))
     devDependencies:
       '@fhenixprotocol/contracts':
         specifier: 0.2.1
@@ -22,7 +26,7 @@ importers:
         version: 1.0.10(hardhat@2.22.10(ts-node@10.9.2(@types/node@20.11.19)(typescript@5.3.3))(typescript@5.3.3))
       '@nomicfoundation/hardhat-toolbox':
         specifier: ^4.0.0
-        version: 4.0.0(@nomicfoundation/hardhat-chai-matchers@2.0.6(@nomicfoundation/hardhat-ethers@3.0.5(ethers@6.11.1)(hardhat@2.22.10(ts-node@10.9.2(@types/node@20.11.19)(typescript@5.3.3))(typescript@5.3.3)))(chai@4.4.1)(ethers@6.11.1)(hardhat@2.22.10(ts-node@10.9.2(@types/node@20.11.19)(typescript@5.3.3))(typescript@5.3.3)))(@nomicfoundation/hardhat-ethers@3.0.5(ethers@6.11.1)(hardhat@2.22.10(ts-node@10.9.2(@types/node@20.11.19)(typescript@5.3.3))(typescript@5.3.3)))(@nomicfoundation/hardhat-network-helpers@1.0.10(hardhat@2.22.10(ts-node@10.9.2(@types/node@20.11.19)(typescript@5.3.3))(typescript@5.3.3)))(@nomicfoundation/hardhat-verify@2.0.4(hardhat@2.22.10(ts-node@10.9.2(@types/node@20.11.19)(typescript@5.3.3))(typescript@5.3.3)))(@typechain/ethers-v6@0.5.1(ethers@6.11.1)(typechain@8.3.2(typescript@5.3.3))(typescript@5.3.3))(@typechain/hardhat@9.1.0(@typechain/ethers-v6@0.5.1(ethers@6.11.1)(typechain@8.3.2(typescript@5.3.3))(typescript@5.3.3))(ethers@6.11.1)(hardhat@2.22.10(ts-node@10.9.2(@types/node@20.11.19)(typescript@5.3.3))(typescript@5.3.3))(typechain@8.3.2(typescript@5.3.3)))(@types/chai@4.3.11)(@types/mocha@10.0.6)(@types/node@20.11.19)(chai@4.4.1)(ethers@6.11.1)(hardhat-gas-reporter@1.0.10(hardhat@2.22.10(ts-node@10.9.2(@types/node@20.11.19)(typescript@5.3.3))(typescript@5.3.3)))(hardhat@2.22.10(ts-node@10.9.2(@types/node@20.11.19)(typescript@5.3.3))(typescript@5.3.3))(solidity-coverage@0.8.7(hardhat@2.22.10(ts-node@10.9.2(@types/node@20.11.19)(typescript@5.3.3))(typescript@5.3.3)))(ts-node@10.9.2(@types/node@20.11.19)(typescript@5.3.3))(typechain@8.3.2(typescript@5.3.3))(typescript@5.3.3)
+        version: 4.0.0(gpu6tl3n2jjkabjfvvshuk3kkq)
       '@nomicfoundation/hardhat-verify':
         specifier: ^2.0.4
         version: 2.0.4(hardhat@2.22.10(ts-node@10.9.2(@types/node@20.11.19)(typescript@5.3.3))(typescript@5.3.3))
@@ -430,6 +434,12 @@ packages:
   '@nomicfoundation/solidity-analyzer@0.1.1':
     resolution: {integrity: sha512-1LMtXj1puAxyFusBgUIy5pZk3073cNXYnXUpuNKFghHbIit/xZgbk0AokpUADbNm3gyD6bFWl3LRFh3dhVdREg==}
     engines: {node: '>= 12'}
+
+  '@nomiclabs/hardhat-ethers@2.2.3':
+    resolution: {integrity: sha512-YhzPdzb612X591FOe68q+qXVXGG2ANZRvDo0RRUtimev85rCrAlv/TLMEZw5c+kq9AbzocLTVX/h2jVIFPL9Xg==}
+    peerDependencies:
+      ethers: ^5.0.0
+      hardhat: ^2.0.0
 
   '@openzeppelin/contracts@5.0.1':
     resolution: {integrity: sha512-yQJaT5HDp9hYOOp4jTYxMsR02gdFZFXhewX5HW9Jo4fsqSVqqyIO/xTHdWDaKX5a3pv1txmf076Lziz+sO7L1w==}
@@ -2635,8 +2645,8 @@ snapshots:
       ethereumjs-util: 7.1.5
       hardhat: 2.22.10(ts-node@10.9.2(@types/node@20.11.19)(typescript@5.3.3))(typescript@5.3.3)
 
-  ? '@nomicfoundation/hardhat-toolbox@4.0.0(@nomicfoundation/hardhat-chai-matchers@2.0.6(@nomicfoundation/hardhat-ethers@3.0.5(ethers@6.11.1)(hardhat@2.22.10(ts-node@10.9.2(@types/node@20.11.19)(typescript@5.3.3))(typescript@5.3.3)))(chai@4.4.1)(ethers@6.11.1)(hardhat@2.22.10(ts-node@10.9.2(@types/node@20.11.19)(typescript@5.3.3))(typescript@5.3.3)))(@nomicfoundation/hardhat-ethers@3.0.5(ethers@6.11.1)(hardhat@2.22.10(ts-node@10.9.2(@types/node@20.11.19)(typescript@5.3.3))(typescript@5.3.3)))(@nomicfoundation/hardhat-network-helpers@1.0.10(hardhat@2.22.10(ts-node@10.9.2(@types/node@20.11.19)(typescript@5.3.3))(typescript@5.3.3)))(@nomicfoundation/hardhat-verify@2.0.4(hardhat@2.22.10(ts-node@10.9.2(@types/node@20.11.19)(typescript@5.3.3))(typescript@5.3.3)))(@typechain/ethers-v6@0.5.1(ethers@6.11.1)(typechain@8.3.2(typescript@5.3.3))(typescript@5.3.3))(@typechain/hardhat@9.1.0(@typechain/ethers-v6@0.5.1(ethers@6.11.1)(typechain@8.3.2(typescript@5.3.3))(typescript@5.3.3))(ethers@6.11.1)(hardhat@2.22.10(ts-node@10.9.2(@types/node@20.11.19)(typescript@5.3.3))(typescript@5.3.3))(typechain@8.3.2(typescript@5.3.3)))(@types/chai@4.3.11)(@types/mocha@10.0.6)(@types/node@20.11.19)(chai@4.4.1)(ethers@6.11.1)(hardhat-gas-reporter@1.0.10(hardhat@2.22.10(ts-node@10.9.2(@types/node@20.11.19)(typescript@5.3.3))(typescript@5.3.3)))(hardhat@2.22.10(ts-node@10.9.2(@types/node@20.11.19)(typescript@5.3.3))(typescript@5.3.3))(solidity-coverage@0.8.7(hardhat@2.22.10(ts-node@10.9.2(@types/node@20.11.19)(typescript@5.3.3))(typescript@5.3.3)))(ts-node@10.9.2(@types/node@20.11.19)(typescript@5.3.3))(typechain@8.3.2(typescript@5.3.3))(typescript@5.3.3)'
-  : dependencies:
+  '@nomicfoundation/hardhat-toolbox@4.0.0(gpu6tl3n2jjkabjfvvshuk3kkq)':
+    dependencies:
       '@nomicfoundation/hardhat-chai-matchers': 2.0.6(@nomicfoundation/hardhat-ethers@3.0.5(ethers@6.11.1)(hardhat@2.22.10(ts-node@10.9.2(@types/node@20.11.19)(typescript@5.3.3))(typescript@5.3.3)))(chai@4.4.1)(ethers@6.11.1)(hardhat@2.22.10(ts-node@10.9.2(@types/node@20.11.19)(typescript@5.3.3))(typescript@5.3.3))
       '@nomicfoundation/hardhat-ethers': 3.0.5(ethers@6.11.1)(hardhat@2.22.10(ts-node@10.9.2(@types/node@20.11.19)(typescript@5.3.3))(typescript@5.3.3))
       '@nomicfoundation/hardhat-network-helpers': 1.0.10(hardhat@2.22.10(ts-node@10.9.2(@types/node@20.11.19)(typescript@5.3.3))(typescript@5.3.3))
@@ -2712,6 +2722,11 @@ snapshots:
       '@nomicfoundation/solidity-analyzer-win32-arm64-msvc': 0.1.1
       '@nomicfoundation/solidity-analyzer-win32-ia32-msvc': 0.1.1
       '@nomicfoundation/solidity-analyzer-win32-x64-msvc': 0.1.1
+
+  '@nomiclabs/hardhat-ethers@2.2.3(ethers@6.11.1)(hardhat@2.22.10(ts-node@10.9.2(@types/node@20.11.19)(typescript@5.3.3))(typescript@5.3.3))':
+    dependencies:
+      ethers: 6.11.1
+      hardhat: 2.22.10(ts-node@10.9.2(@types/node@20.11.19)(typescript@5.3.3))(typescript@5.3.3)
 
   '@openzeppelin/contracts@5.0.1': {}
 

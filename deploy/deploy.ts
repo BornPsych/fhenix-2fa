@@ -1,7 +1,7 @@
 import { DeployFunction } from "hardhat-deploy/types";
 import { HardhatRuntimeEnvironment } from "hardhat/types";
 import chalk from "chalk";
-
+import type { TwoFactorAuth } from "../types";
 const hre = require("hardhat");
 
 const func: DeployFunction = async function () {
@@ -13,22 +13,29 @@ const func: DeployFunction = async function () {
     if (hre.network.name === "localfhenix") {
       await fhenixjs.getFunds(signer.address);
     } else {
-        console.log(
-            chalk.red("Please fund your account with testnet FHE from https://faucet.fhenix.zone"));
-        return;
+      console.log(
+        chalk.red("Please fund your account with testnet FHE from https://faucet.fhenix.zone"));
+      return;
     }
   }
 
-  const counter = await deploy("Counter", {
-    from: signer.address,
-    args: [],
-    log: true,
-    skipIfAlreadyDeployed: false,
-  });
+  const accounts = await hre.ethers.getSigners();
+  const contractOwner = accounts[0];
 
-  console.log(`Counter contract: `, counter.address);
+  const contract = await deploy("TwoFactorAuth", {
+    from: contractOwner.address,
+    log: true,
+    args: [contractOwner.address],
+  });
+  const twoFactorAuth = (await ethers.getContractAt(
+    "TwoFactorAuth",
+    contract.address,
+  )) as unknown as TwoFactorAuth;
+
+  console.log("twoFactorAuth address", await twoFactorAuth.getAddress());
+
 };
 
 export default func;
-func.id = "deploy_counter";
-func.tags = ["Counter"];
+func.id = "DeployFunction";
+func.tags = ["TwoFactorAuth"];

@@ -17,7 +17,7 @@ export function shouldBehaveLikeTwoFactorAuth(): void {
       this.signers.admin,
     );
 
-    // Register the user with the secondary signer
+    // Register the user with the secondary s igner
     const tx = await this.twoFactorAuth
       .connect(this.signers.admin)
       .register(adminPermit, this.signers.secondary.address);
