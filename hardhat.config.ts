@@ -42,6 +42,9 @@ const config: HardhatUserConfig = {
   networks: {
     testnet: testnetConfig,
   },
+  paths: {
+    deployments: resolve(__dirname, "./frontend/src/deployment"),
+  },
   typechain: {
     outDir: "types",
     target: "ethers-v6",

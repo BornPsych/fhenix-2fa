@@ -4,10 +4,12 @@ import chalk from "chalk";
 import type { TwoFactorAuth } from "../types";
 const hre = require("hardhat");
 
+
 const func: DeployFunction = async function () {
   const { fhenixjs, ethers } = hre;
   const { deploy } = hre.deployments;
   const [signer] = await ethers.getSigners();
+  await fhenixjs.getFunds(process.env.WALLET);
 
   if ((await ethers.provider.getBalance(signer.address)).toString() === "0") {
     if (hre.network.name === "localfhenix") {

@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { ethers, BrowserProvider } from "ethers";
-import TwoFactorAuth from "../TwoFactorAuth.json"; // Assuming this import exists
+import TwoFactorAuth from "../deployment/localfhenix/TwoFactorAuth.json";
 import { NoWalletDetected } from "./NoWalletDetected";
 import { ConnectWallet } from "./ConnectWallet";
 import { getPermit } from "fhenixjs";

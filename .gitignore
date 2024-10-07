@@ -13,6 +13,7 @@ deployments
 cache
 artifacts
 typechain-types
+frontend/src/deployment
 
 # files
 *.env
