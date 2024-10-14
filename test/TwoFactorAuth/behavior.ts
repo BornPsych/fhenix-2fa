@@ -27,6 +27,7 @@ export function shouldBehaveLikeTwoFactorAuth(): void {
     const authData = await this.twoFactorAuth.authData(
       this.signers.admin.address,
     );
+    console.log(" should register a user with a secondary signer", authData);
     expect(authData.secondarySigner).to.equal(this.signers.secondary.address);
     expect(authData.userPublicKey).to.equal(adminPermit.publicKey);
   });
@@ -42,6 +43,7 @@ export function shouldBehaveLikeTwoFactorAuth(): void {
     const authData = await this.twoFactorAuth.authData(
       this.signers.admin.address,
     );
+    console.log(" approve a should request a login", authData);
     expect(authData.isApproved).to.be.false;
   });
 
@@ -60,6 +62,7 @@ export function shouldBehaveLikeTwoFactorAuth(): void {
     const authData = await this.twoFactorAuth.authData(
       this.signers.admin.address,
     );
+    console.log(" approve a login request authData", authData);
     expect(authData.isApproved).to.be.true;
   });
 
@@ -69,6 +72,7 @@ export function shouldBehaveLikeTwoFactorAuth(): void {
       .connect(this.signers.admin)
       .getEncryptedPassword();
     expect(encryptedPassword).to.not.be.empty;
+    console.log("hre.fhenixjs", hre.fhenixjs);
 
     // Unseal the temporary password
     tempPassword = hre.fhenixjs.unseal(
@@ -85,6 +89,8 @@ export function shouldBehaveLikeTwoFactorAuth(): void {
       .connect(this.signers.admin)
       .addServiceToWhitelist(adminPermit, serviceSigner.address);
     await tx.wait();
+
+    console.log("tx", tx, "serviceSigner", serviceSigner, "serviceSigner.address", serviceSigner.address, "adminPermit", adminPermit)
 
     // Verify that the service has been whitelisted
     const whitelistedServices = await this.twoFactorAuth.whitelistedServices(

@@ -9,7 +9,9 @@ const func: DeployFunction = async function () {
   const { fhenixjs, ethers } = hre;
   const { deploy } = hre.deployments;
   const [signer] = await ethers.getSigners();
-  await fhenixjs.getFunds(process.env.WALLET);
+  await fhenixjs.getFunds(process.env.WALLET_PRIMARY);
+  await fhenixjs.getFunds(process.env.WALLET_SECONDARY);
+  await fhenixjs.getFunds(process.env.WALLET_RANDOM_SERVICE);
 
   if ((await ethers.provider.getBalance(signer.address)).toString() === "0") {
     if (hre.network.name === "localfhenix") {
