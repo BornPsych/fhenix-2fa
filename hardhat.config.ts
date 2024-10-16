@@ -1,6 +1,7 @@
 // Plugins
 import "@nomicfoundation/hardhat-toolbox";
 import { config as dotenvConfig } from "dotenv";
+import { ethers } from "ethers";
 import "fhenix-hardhat-docker";
 import "fhenix-hardhat-plugin";
 import "hardhat-deploy";
@@ -13,34 +14,35 @@ dotenvConfig({ path: resolve(__dirname, dotenvConfigPath) });
 
 const TESTNET_CHAIN_ID = 8008135;
 const TESTNET_RPC_URL = "https://api.helium.fhenix.zone";
+const LOCAL_CHAIN_ID = 412346
+const LOCAL_RPC_URL = "http://localhost:42069"
+
+// Generates 10 random wallet addresses
+const generateRandomPrivateKey = () => {
+  const wallet = ethers.Wallet.createRandom();
+  return wallet.privateKey;
+};
+const randomPrivateKeys = Array(10).fill(null).map(() => generateRandomPrivateKey());
+
 
 const testnetConfig = {
   chainId: TESTNET_CHAIN_ID,
   url: TESTNET_RPC_URL,
+  accounts: randomPrivateKeys
 }
 
-// Select either private keys or mnemonic from .env file or environment variables
-const keys = process.env.KEY;
-if (!keys) {
-  let mnemonic = process.env.MNEMONIC;
-  if (!mnemonic) {
-    throw new Error("No mnemonic or private key provided, please set MNEMONIC or KEY in your .env file");
-  }
-  testnetConfig['accounts'] = {
-    count: 10,
-    mnemonic,
-    path: "m/44'/60'/0'/0",
-  }
-} else {
-  testnetConfig['accounts'] = [keys];
+const localConfig = {
+  chainId: LOCAL_CHAIN_ID,
+  url: LOCAL_RPC_URL,
+  accounts: [process.env.WALLET_PRIMARY_PRIVATE_KEY as string, ...randomPrivateKeys],
 }
-
 
 const config: HardhatUserConfig = {
   solidity: "0.8.25",
   defaultNetwork: "localfhenix",
   networks: {
     testnet: testnetConfig,
+    localfhenix: localConfig
   },
   paths: {
     deployments: resolve(__dirname, "./frontend/src/deployment"),

@@ -1,38 +1,51 @@
-# Sample React Dapp
+# Fhenix 2 Factor Authentication
 
-This directory has a sample Dapp to interact with your contracts, built using
-React.
+## Getting Started
 
-## Running the Dapp
+Make sure the follwoing point
 
-This project uses [`create-react-app`](https://create-react-app.dev/), so most
-configuration files are handled by it.
+1.  Your docker comtainer should be up and running
 
-To run it, you just need to execute `npm start` in a terminal, and open
-[http://localhost:3000](http://localhost:3000).
+```bash
+cd .. && pnpm run localfhenix:start
+```
 
-To learn more about what `create-react-app` offers, you can read
-[its documentation](https://create-react-app.dev/docs/getting-started).
+2. Your program is compiled and deployed (If not please the folllwoing commands in the main repo)
 
-## Architecture of the Dapp
+```bash
+pnpm run compile
+pnpm run deploy
+```
 
-This Dapp consists of multiple React Components, which you can find in
-`src/components`.
+### Run the app
 
-Most of them are presentational components, have no logic, and just render HTML.
+First, copy the example env to .env
 
-The core functionality is implemented in `src/components/Dapp.js`, which has
-examples of how to connect to the user's wallet, initialize your Ethereum
-connection and contracts, read from the contract's state, and send transactions.
+```bash
+cp .env.example .env
+```
 
-You can use the `Dapp` component as a starting point for your project. It has
-comments explaining each part of its code, and indicating what's specific to
-this project, and what can be reused.
+- WALLET_PRIMARY = Primary admin who is also teh deployer of the contract
+- WALLET_SECONDARY = Secondary signer in 2 factor authentication
+- WALLET_RANDOM_SERVICE = Random 3rd party service
+- WALLET_PRIMARY_PRIVATE_KEY = Private key for primary admin
 
-## Getting help and news
+Second, run the development server:
 
-If you need help with this project or with Hardhat in general, please read [this guide](https://hardhat.org/hardhat-runner/docs/guides/getting-help) to learn where and how to get it.
+```bash
+pnpm dev
+```
 
-[Follow us on Twitter](https://twitter.com/HardhatHQ) to get the latest news about Hardhat, and don't forget to star [our GitHub repository](https://github.com/NomicFoundation/hardhat)!
+## Flow for the app
 
-**Happy _building_!**
+The flow is similar to that of main app
+
+It is divided into three screens or routes or simplicity
+
+1. **Register**: It registers teh secondary signer for teh admin
+2. **Home**: Here we can request for login and after request gets approved, we can get the encrypted password and can decrypt it. We can also add services to whitelist andverify temperory password
+3. **Approve**: Here, the secondary signer can approve the incoming request, it is also called approvers dashboard
+
+```text
+All the three apps are mutually exclusive to each other and do not share any state other than login state. which can be changed anytime.
+```

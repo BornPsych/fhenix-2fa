@@ -90,8 +90,6 @@ export function shouldBehaveLikeTwoFactorAuth(): void {
       .addServiceToWhitelist(adminPermit, serviceSigner.address);
     await tx.wait();
 
-    console.log("tx", tx, "serviceSigner", serviceSigner, "serviceSigner.address", serviceSigner.address, "adminPermit", adminPermit)
-
     // Verify that the service has been whitelisted
     const whitelistedServices = await this.twoFactorAuth.whitelistedServices(
       serviceSigner.address,
